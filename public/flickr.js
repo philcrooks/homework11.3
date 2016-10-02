@@ -49,12 +49,12 @@ Photographs.prototype._photoSearch = function(url) {
 }
 
 Photographs.prototype.requestPhotosAtLatLon = function(lat, lon, gallery){
-  var url = BASEURL_SEARCH + "&api_key=" + API_KEY + "&lat=" + lat + "&lon=" + lon + "&accuracy=10&per_page=10&in_gallery=" + gallery;
+  var url = BASEURL_SEARCH + "&api_key=" + API_KEY + "&lat=" + lat + "&lon=" + lon + "&tags=landscape&accuracy=10&per_page=10&in_gallery=" + gallery;
   this._photoSearch(url);
 }
 
 Photographs.prototype.requestPhotosOfCityByWoeId = function(woeid, gallery){
-  var url = BASEURL_SEARCH + "&api_key=" + API_KEY + "&woeid=" + woeid + "&accuracy=10&per_page=10&in_gallery=" + gallery;
+  var url = BASEURL_SEARCH + "&api_key=" + API_KEY + "&woeid=" + woeid + "&tags=landscape&accuracy=10&per_page=10&in_gallery=" + gallery;
   this._photoSearch(url);
 }
 
