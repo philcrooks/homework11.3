@@ -1,17 +1,23 @@
+API_KEY = "bdfce550364ad51359eabbad4e254bea";
+BASEURL_SEARCH = "https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1";
+BASEURL_FIND_PLACE = "https://api.flickr.com/services/rest/?method=flickr.places.find&format=json&nojsoncallback=1";
+
 function Photographs() {
-  this._API_KEY = "bdfce550364ad51359eabbad4e254bea";
-  this._BASEURL_SEARCH = "https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1";
-  this._BASEURL_FIND_PLACE = "https://api.flickr.com/services/rest/?method=flickr.places.find&format=json&nojsoncallback=1";
+  this._request = null;
+
   this._photos = null;
   this._callback = null;
   Object.defineProperty(this, "count", { get: function () {
     return (this._photos === null) ? 0 : this._photos.total; } });
   Object.defineProperty(this, "ready", { get: function () {
     return (this._photos !== null); } });
+
+  // for debug
+  this._cityAndCountry = "";
 }
 
-Photographs.prototype.observer = function(callback) {
-  this._callback = callback;
+Photographs.prototype.observer = function(callback, context) {
+  this._callback = { fn: callback, fnContext: context };
 }
 
 Photographs.prototype.getPhotoUrl = function(small) {
@@ -27,38 +33,41 @@ Photographs.prototype.getPhotoUrl = function(small) {
 }
 
 Photographs.prototype._photoSearch = function(url) {
-  var request = new XMLHttpRequest();
-  this._photos = null
-  request.open("GET", url);
-  request.onload = function() {
-    if (request.status !== 200) return;
-       this._photos = JSON.parse(request.responseText);
+  this._photos = null;
+
+  this._request = new XMLHttpRequest();
+  this._request.open("GET", url);
+  this._request.onload = function() {
+    if (this._request.status !== 200) return;
+       this._photos = JSON.parse(this._request.responseText);
        if (this._callback !== null) {
-        this._callback();
+        this._callback.fn.call(this._callback.fnContext);
         this._callback = null;
       }
     }.bind(this);
-  request.send();
+  this._request.send();
 }
 
 Photographs.prototype.requestPhotosAtLatLon = function(lat, lon, gallery){
-  var url = this._BASEURL_SEARCH + "&api_key=" + this._API_KEY + "&lat=" + lat + "&lon=" + lon + "&accuracy=10&per_page=10&in_gallery=" + gallery;
+  var url = BASEURL_SEARCH + "&api_key=" + API_KEY + "&lat=" + lat + "&lon=" + lon + "&accuracy=10&per_page=10&in_gallery=" + gallery;
   this._photoSearch(url);
 }
 
 Photographs.prototype.requestPhotosOfCityByWoeId = function(woeid, gallery){
-  var url = this._BASEURL_SEARCH + "&api_key=" + this._API_KEY + "&woeid=" + woeid + "&accuracy=10&per_page=10&in_gallery=" + gallery;
+  var url = BASEURL_SEARCH + "&api_key=" + API_KEY + "&woeid=" + woeid + "&accuracy=10&per_page=10&in_gallery=" + gallery;
   this._photoSearch(url);
 }
 
 Photographs.prototype.requestPhotosOfCity = function(city, country, gallery){
-  var request = new XMLHttpRequest();
-  var url = this._BASEURL_FIND_PLACE + "&api_key=" + this._API_KEY + "&query=" +  encodeURIComponent(city + "," + country);
-  request.open("GET", url);
-  request.onload = function() {
-    if (request.status !== 200) return;
-       var woeid = JSON.parse(request.responseText).places.place[0].woeid;
+  this._cityAndCountry = city + "," + country
+
+  this._request = new XMLHttpRequest();
+  var url = BASEURL_FIND_PLACE + "&api_key=" + API_KEY + "&query=" +  encodeURIComponent(this._cityAndCountry);
+  this._request.open("GET", url);
+  this._request.onload = function() {
+    if (this._request.status !== 200) return;
+       var woeid = JSON.parse(this._request.responseText).places.place[0].woeid;
        this.requestPhotosOfCityByWoeId(woeid, gallery);
     }.bind(this);
-  request.send();
+  this._request.send();
 }

@@ -13,15 +13,14 @@ function Pin (map, coords, country, photos) {
   if (this._photos.ready)
     this.addInfowindow();
   else
-    this._photos.observer(function() {
-      this.addInfowindow();
-    }.bind(this));
+    this._photos.observer(this.addInfowindow, this);
 }
 
 Pin.prototype.addInfowindow = function() {
+  var photoUrl = this._photos.getPhotoUrl(true);
   this._infowindow = new google.maps.InfoWindow({
     content: "<h2>" + this._country.name + "</h2>" +
-      "<img src='" + this._photos.getPhotoUrl(true) + "'>"
+      "<img src='" + photoUrl + "'>"
   });
 
   this._marker.addListener('click', function() {
