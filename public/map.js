@@ -1,19 +1,14 @@
-function Pin (map, coords, title) {
-  this.marker = new google.maps.Marker({
-    position: coords,
-    map: map,
-    title: title
+function Map (container) {
+  this.googleMap = new google.maps.Map(container, {
+    center: new google.maps.LatLng(0, 150.644),
+    zoom: 1,
+    minZoom: 1
   });
-  this.infowindow = new google.maps.InfoWindow({
-    content: "<h2>This is " + title + "</h2>"
-  });
-  this.marker.addListener('click', function() {
-    this.infowindow.open(map, this.marker);
-  }.bind(this));
+  this.pins = [];
 }
 
-Map.prototype.addPin = function(coords, title) {
-  this.pins.push(new Pin(this.googleMap, coords, title));
+Map.prototype.addPin = function(coords, country, photos) {
+  this.pins.push(new Pin(this.googleMap, coords, country, photos));
 }
 
 Map.prototype.zoom = function() {
@@ -31,13 +26,4 @@ Map.prototype.zoom = function() {
     }
   })
   this.googleMap.fitBounds(bounds);
-}
-
-function Map (container) {
-  this.googleMap = new google.maps.Map(container, {
-    center: new google.maps.LatLng(0, 150.644),
-    zoom: 1,
-    minZoom: 1
-  });
-  this.pins = [];
 }

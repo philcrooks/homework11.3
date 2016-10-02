@@ -27,10 +27,8 @@ var initMap = function() {
 
 var initialise = function() {
   var map = initMap();
-
-  var url = "https://restcountries.eu/rest/v1/all";
   var info = new CountryInfo();
-  info.requestInfo(url);
+  info.requestInfo();
 
   var languages = document.querySelector('select');
   sortOptions(languages);
@@ -39,11 +37,12 @@ var initialise = function() {
     if (selectedCountries === null) return;
     map = initMap();
     selectedCountries.forEach(function(country) {
-        map.addPin(new google.maps.LatLng(country.latlng[0], country.latlng[1]), country.name);
+      var capitalPhotos = new Photographs();
+      capitalPhotos.requestPhotosOfCity(country.capital, country.name, true);
+      map.addPin(new google.maps.LatLng(country.latlng[0], country.latlng[1]), country, capitalPhotos);
     })
     map.zoom();
   }
-
 }
 
 window.onload = initialise;

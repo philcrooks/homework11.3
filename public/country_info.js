@@ -1,7 +1,12 @@
-CountryInfo.prototype.requestInfo = function(url){
+function CountryInfo() {
+  this._url = "https://restcountries.eu/rest/v1/all";
+  this._countries = null;
+}
+
+CountryInfo.prototype.requestInfo = function(){
   this._countries = null;
   var request = new XMLHttpRequest();
-  request.open("GET", url);
+  request.open("GET", this._url);
   request.onload = function() {
     if (request.status !== 200) return;
       this._countries = JSON.parse(request.responseText);
@@ -29,8 +34,4 @@ CountryInfo.prototype.languageList = function() {
     }
   })
   return languages.sort();
-}
-
-function CountryInfo() {
-  this._countries = null;
 }
