@@ -1,4 +1,3 @@
-API_KEY = "bdfce550364ad51359eabbad4e254bea";
 BASEURL_SEARCH = "https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1";
 BASEURL_FIND_PLACE = "https://api.flickr.com/services/rest/?method=flickr.places.find&format=json&nojsoncallback=1";
 
