@@ -11,6 +11,14 @@ Map.prototype.addPin = function(coords, country, photos) {
   this.pins.push(new Pin(this.googleMap, coords, country, photos));
 }
 
+Map.prototype.addPhotoToPins = function(index) {
+  var pin = this.pins[index];
+  pin.photos.requestPhotosOfCity(true, function() {
+    pin.addInfowindow();
+    if (index < this.pins.length - 1) this.addPhotoToPins(index + 1)
+  }.bind(this))
+}
+
 Map.prototype.zoom = function() {
   var n = this.pins.length;
   if (n === 0) return;

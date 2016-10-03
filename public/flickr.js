@@ -4,6 +4,7 @@ BASEURL_FIND_PLACE = "https://api.flickr.com/services/rest/?method=flickr.places
 
 function Photographs() {
   this._request = null;
+  this._url = "";
 
   this._photos = null;
   this._callback = null;
@@ -17,7 +18,7 @@ function Photographs() {
 }
 
 Photographs.prototype.observer = function(callback, context) {
-  this._callback = { fn: callback, fnContext: context };
+  this._callback = { fnCode: callback, fnContext: context };
 }
 
 Photographs.prototype.getPhotoUrl = function(small) {
@@ -37,11 +38,13 @@ Photographs.prototype._photoSearch = function(url) {
 
   this._request = new XMLHttpRequest();
   this._request.open("GET", url);
+  // console.log("photoSearch:", this);
   this._request.onload = function() {
     if (this._request.status !== 200) return;
        this._photos = JSON.parse(this._request.responseText);
+       // console.log("photoSearch callback:", this);
        if (this._callback !== null) {
-        this._callback.fn.call(this._callback.fnContext);
+        this._callback.fnCode.call(this._callback.fnContext);
         this._callback = null;
       }
     }.bind(this);
@@ -61,13 +64,14 @@ Photographs.prototype.requestPhotosOfCityByWoeId = function(woeid, gallery){
 Photographs.prototype.requestPhotosOfCity = function(city, country, gallery){
   this._cityAndCountry = city + "," + country
 
-  this._request = new XMLHttpRequest();
   var url = BASEURL_FIND_PLACE + "&api_key=" + API_KEY + "&query=" +  encodeURIComponent(this._cityAndCountry);
+  this._request = new XMLHttpRequest();
   this._request.open("GET", url);
   this._request.onload = function() {
     if (this._request.status !== 200) return;
-       var woeid = JSON.parse(this._request.responseText).places.place[0].woeid;
-       this.requestPhotosOfCityByWoeId(woeid, gallery);
+      console.log("requestPhotosOfCity:", this);
+      var woeid = JSON.parse(this._request.responseText).places.place[0].woeid;
+      this.requestPhotosOfCityByWoeId(woeid, gallery);
     }.bind(this);
   this._request.send();
 }

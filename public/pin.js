@@ -9,14 +9,11 @@ function Pin (map, coords, country, photos) {
   });
 
   Object.defineProperty(this, "marker", { get: function () { return this._marker; } });
-
-  if (this._photos.ready)
-    this.addInfowindow();
-  else
-    this._photos.observer(this.addInfowindow, this);
+  Object.defineProperty(this, "photos", { get: function () { return this._photos; } });
 }
 
 Pin.prototype.addInfowindow = function() {
+  // console.log("addInfowindow:", this);
   var photoUrl = this._photos.getPhotoUrl(true);
   this._infowindow = new google.maps.InfoWindow({
     content: "<h2>" + this._country.name + "</h2>" +
