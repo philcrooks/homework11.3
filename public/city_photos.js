@@ -1,3 +1,5 @@
+DEBUG = true;
+
 BASEURL_SEARCH = "https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1";
 BASEURL_FIND_PLACE = "https://api.flickr.com/services/rest/?method=flickr.places.find&format=json&nojsoncallback=1";
 
@@ -24,19 +26,18 @@ CityPhotos.prototype.getPhotoUrl = function(small) {
 
 CityPhotos.prototype._photoSearch = function(url) {
   this._photos = null;
-
   var request = new XMLHttpRequest();
   request.open("GET", url);
-  // console.log("photoSearch:", this);
   request.onload = function() {
     if (request.status !== 200) return;
+    if (DEBUG) console.log("photoSearch incoming request:", request);
     this._photos = JSON.parse(request.responseText);
-       // console.log("photoSearch callback:", this);
     if (this._callback !== null) {
       this._callback();
       this._callback = null;
     }
   }.bind(this);
+  if (DEBUG) console.log("photoSearch outgoing request:", request);
   request.send();
 }
 
@@ -44,14 +45,15 @@ CityPhotos.prototype.requestPhotosOfCity = function(gallery, callback){
   this._callback = callback;
   var cityAndCountry = this._city + "," + this._country
   var url = BASEURL_FIND_PLACE + "&api_key=" + FLICKR_API_KEY + "&query=" +  encodeURIComponent(cityAndCountry);
-  //console.log("requestPhotosOfCity", this)
   var request = new XMLHttpRequest();
   request.open("GET", url);
   request.onload = function() {
     if (request.status !== 200) return;
-      var woeid = JSON.parse(request.responseText).places.place[0].woeid;
-      var url = BASEURL_SEARCH + "&api_key=" + FLICKR_API_KEY + "&woeid=" + woeid + "&tags=landscape&accuracy=10&per_page=10&in_gallery=" + gallery;
-      this._photoSearch(url);
-    }.bind(this);
+    if (DEBUG) console.log("requestPhotosOfCity incoming request:", request);
+    var woeid = JSON.parse(request.responseText).places.place[0].woeid;
+    var url = BASEURL_SEARCH + "&api_key=" + FLICKR_API_KEY + "&woeid=" + woeid + "&tags=landscape&accuracy=10&per_page=10&in_gallery=" + gallery;
+    this._photoSearch(url);
+  }.bind(this);
+  if (DEBUG) console.log("requestPhotosOfCity outgoing request:", request);
   request.send();
 }

@@ -37,8 +37,11 @@ var initialise = function() {
     if (selectedCountries === null) return;
     map = initMap();
     selectedCountries.forEach(function(country) {
-      var capitalPhotos = new CityPhotos(country.capital, country.name);
-      map.addPin(new google.maps.LatLng(country.latlng[0], country.latlng[1]), country, capitalPhotos);
+      map.addPin(
+        new google.maps.LatLng(country.latlng[0], country.latlng[1]),
+        country,
+        new CityPhotos(country.capital, country.name)
+      );
     })
     map.zoom();
     map.addPhotoToPins(0);
